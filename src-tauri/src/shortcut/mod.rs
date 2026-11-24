@@ -1260,6 +1260,7 @@ pub fn add_post_process_prompt(
         id: id.clone(),
         name,
         prompt,
+        open_in_window: false,
     };
 
     settings.post_process_prompts.push(new_prompt.clone());

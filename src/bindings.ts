@@ -570,6 +570,26 @@ async showMainWindowCommand() : Promise<Result<null, string>> {
 async cancelOperation() : Promise<void> {
     await TAURI_INVOKE("cancel_operation");
 },
+async popupGetText() : Promise<string> {
+    return await TAURI_INVOKE("popup_get_text");
+},
+/**
+ * Runs a saved prompt (`prompt_id`) or a free-form instruction (`custom`) over `text`.
+ */
+async popupRunPrompt(text: string, promptId: string | null, custom: string | null) : Promise<Result<string, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("popup_run_prompt", { text, promptId, custom }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Hides the popup so focus returns to the previous app, then pastes `text` there.
+ */
+async popupPaste(text: string) : Promise<void> {
+    await TAURI_INVOKE("popup_paste", { text });
+},
 async isPortable() : Promise<boolean> {
     return await TAURI_INVOKE("is_portable");
 },
@@ -1023,10 +1043,8 @@ async updateRecordingRetentionPeriod(period: string) : Promise<Result<null, stri
 }
 },
 /**
- * Checks if the Mac is a laptop by detecting battery presence
- * 
- * This uses pmset to check for battery information.
- * Returns true if a battery is detected (laptop), false otherwise (desktop)
+ * Stub implementation for non-macOS platforms
+ * Always returns false since laptop detection is macOS-specific
  */
 async isLaptop() : Promise<Result<boolean, string>> {
     try {
@@ -1242,7 +1260,11 @@ export type KeyboardImplementation = "tauri" | "handy_keys" |
  * (e.g. from a Wayland compositor keybinding).
  */
 "none"
-export type LLMPrompt = { id: string; name: string; prompt: string }
+export type LLMPrompt = { id: string; name: string; prompt: string; 
+/**
+ * Show the result in the popup instead of pasting it (summaries, tables).
+ */
+open_in_window?: boolean }
 /**
  * When Handy's spoken-language detector picks the language for Auto.
  */
