@@ -961,6 +961,18 @@ fn ensure_post_process_defaults(settings: &mut AppSettings) -> bool {
     // Ratón Pérez is built around the LLM actions, so post-processing is always on.
     let mut changed = !settings.post_process_enabled;
     settings.post_process_enabled = true;
+
+    // With no prompt selected the post-processing hotkey silently pastes the raw text.
+    let selected_exists = settings
+        .post_process_selected_prompt_id
+        .as_ref()
+        .is_some_and(|id| settings.post_process_prompts.iter().any(|p| &p.id == id));
+    if !selected_exists {
+        if let Some(first) = settings.post_process_prompts.first() {
+            settings.post_process_selected_prompt_id = Some(first.id.clone());
+            changed = true;
+        }
+    }
     for provider in default_post_process_providers() {
         // Use match to do a single lookup - either sync existing or add new
         match settings
@@ -1136,7 +1148,7 @@ pub fn get_default_settings() -> AppSettings {
         post_process_api_keys: default_post_process_api_keys(),
         post_process_models: default_post_process_models(),
         post_process_prompts: default_post_process_prompts(),
-        post_process_selected_prompt_id: None,
+        post_process_selected_prompt_id: Some("default_improve_transcriptions".to_string()),
         mute_while_recording: false,
         append_trailing_space: false,
         app_language: default_app_language(),
