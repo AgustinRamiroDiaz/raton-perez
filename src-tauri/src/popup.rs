@@ -26,7 +26,6 @@ pub fn show(app: &AppHandle, text: String) {
             .title("Ratón Pérez")
             .inner_size(560.0, 460.0)
             .always_on_top(true)
-            .skip_taskbar(true)
             .center();
             if let Some(data_dir) = crate::portable::data_dir() {
                 builder = builder.data_directory(data_dir.join("webview"));
@@ -40,6 +39,8 @@ pub fn show(app: &AppHandle, text: String) {
             }
         }
     };
+    // show() leaves a minimized window minimized.
+    let _ = window.unminimize();
     let _ = window.show();
     let _ = window.set_focus();
     let _ = app.emit_to(LABEL, "popup-text", text);
