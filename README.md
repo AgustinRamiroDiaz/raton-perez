@@ -2,7 +2,7 @@
 
 Speak, then polish. Ratón Pérez is a fork of [Handy](https://github.com/cjpais/Handy) (local speech-to-text) that adds a writing-tools popup inspired by [WritingTools](https://github.com/theJayTea/WritingTools): after you dictate, you can proofread, rewrite, change the tone, summarize, extract key points or build a table with an LLM before pasting.
 
-The name comes from our initials (T, R, A → RAT) and from *El Ratón Pérez*, the Argentine tooth fairy. Teeth help us speak.
+The name comes from our initials (T, R, A → RAT) and from _El Ratón Pérez_, the Argentine tooth fairy. Teeth help us speak.
 
 ## Demo requirements
 
