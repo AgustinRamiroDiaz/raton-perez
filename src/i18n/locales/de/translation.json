@@ -348,6 +348,10 @@
           "transcribe_with_post_process": {
             "name": "Nachbearbeitungs-Tastenkürzel",
             "description": "Optional: Ein dediziertes Tastenkürzel, das immer die KI-Nachbearbeitung auf deine Transkription anwendet."
+          },
+          "transcribe_with_popup": {
+            "name": "Writing Tools Hotkey",
+            "description": "Record your voice, then open the writing tools popup to proofread, rewrite or reformat the text before pasting."
           }
         },
         "errors": {
@@ -994,5 +998,14 @@
     "learnMore": "So behebst du das",
     "recorderBlocked": "Tastenkürzel können gerade nicht aufgezeichnet werden — macOS Secure Input blockiert Tastenereignisse. Behebe zuerst die Secure-Input-Warnung.",
     "dismiss": "Ausblenden"
+  },
+  "popup": {
+    "transcript": "Transcript",
+    "customPlaceholder": "Describe a change… (e.g. \"make it a bulleted list\")",
+    "apply": "Apply",
+    "copy": "Copy",
+    "pasteResult": "Paste result",
+    "close": "Close",
+    "paste": "Paste"
   }
 }

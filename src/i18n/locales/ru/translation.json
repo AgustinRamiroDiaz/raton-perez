@@ -348,6 +348,10 @@
           "transcribe_with_post_process": {
             "name": "Горячая клавиша постобработки",
             "description": "Специальное сочетание клавиш для ИИ-постобработки вашей транскрипции."
+          },
+          "transcribe_with_popup": {
+            "name": "Writing Tools Hotkey",
+            "description": "Record your voice, then open the writing tools popup to proofread, rewrite or reformat the text before pasting."
           }
         },
         "errors": {
@@ -994,5 +998,14 @@
     "learnMore": "Как это исправить",
     "recorderBlocked": "Сейчас нельзя записать сочетание клавиш — Secure Input в macOS блокирует события клавиш. Сначала устраните предупреждение о Secure Input.",
     "dismiss": "Скрыть"
+  },
+  "popup": {
+    "transcript": "Transcript",
+    "customPlaceholder": "Describe a change… (e.g. \"make it a bulleted list\")",
+    "apply": "Apply",
+    "copy": "Copy",
+    "pasteResult": "Paste result",
+    "close": "Close",
+    "paste": "Paste"
   }
 }

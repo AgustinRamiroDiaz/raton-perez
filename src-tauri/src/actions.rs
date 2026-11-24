@@ -103,7 +103,7 @@ const CANCELLATION_POLL_INTERVAL: Duration = Duration::from_millis(25);
 /// Deadline for the whole post-processing step, retries included. The HTTP
 /// client only bounds connecting, so an endpoint that accepts the request and
 /// never answers would otherwise hold the dictation until a proxy gives up.
-const POST_PROCESS_TIMEOUT: Duration = Duration::from_secs(60);
+pub(crate) const POST_PROCESS_TIMEOUT: Duration = Duration::from_secs(60);
 
 /// Bumped per recording session, so a late paste from an earlier session
 /// doesn't reset the tray or hide the overlay of a newer one.
@@ -134,6 +134,8 @@ pub trait ShortcutAction: Send + Sync {
 // Transcribe Action
 struct TranscribeAction {
     post_process: bool,
+    /// Open the writing-tools popup with the transcript instead of pasting it.
+    popup: bool,
 }
 
 /// Field name for structured output JSON schema
@@ -209,7 +211,7 @@ fn should_use_streaming_overlay(style: OverlayStyle, is_streaming: bool) -> bool
 
 /// What became of a transcription's post-processing.
 #[derive(Debug, PartialEq, Eq)]
-enum PostProcessOutcome {
+pub(crate) enum PostProcessOutcome {
     /// There was no speech to process.
     Skipped,
     Done(String),
@@ -225,28 +227,6 @@ async fn post_process_transcription(
     if is_blank_transcription(transcription) {
         debug!("Post-processing skipped because the transcription is empty");
         return PostProcessOutcome::Skipped;
-    }
-
-    let provider = match settings.active_post_process_provider().cloned() {
-        Some(provider) => provider,
-        None => {
-            debug!("Post-processing enabled but no provider is selected");
-            return PostProcessOutcome::Failed;
-        }
-    };
-
-    let model = settings
-        .post_process_models
-        .get(&provider.id)
-        .cloned()
-        .unwrap_or_default();
-
-    if model.trim().is_empty() {
-        debug!(
-            "Post-processing skipped because provider '{}' has no model configured",
-            provider.id
-        );
-        return PostProcessOutcome::Failed;
     }
 
     let selected_prompt_id = match &settings.post_process_selected_prompt_id {
@@ -272,6 +252,41 @@ async fn post_process_transcription(
         }
     };
 
+    post_process_with_prompt(settings, transcription, &prompt).await
+}
+
+/// Runs `prompt` (a template with `${output}`) over `transcription` with the active provider.
+pub(crate) async fn post_process_with_prompt(
+    settings: &AppSettings,
+    transcription: &str,
+    prompt: &str,
+) -> PostProcessOutcome {
+    if is_blank_transcription(transcription) {
+        return PostProcessOutcome::Skipped;
+    }
+
+    let provider = match settings.active_post_process_provider().cloned() {
+        Some(provider) => provider,
+        None => {
+            debug!("Post-processing enabled but no provider is selected");
+            return PostProcessOutcome::Failed;
+        }
+    };
+
+    let model = settings
+        .post_process_models
+        .get(&provider.id)
+        .cloned()
+        .unwrap_or_default();
+
+    if model.trim().is_empty() {
+        debug!(
+            "Post-processing skipped because provider '{}' has no model configured",
+            provider.id
+        );
+        return PostProcessOutcome::Failed;
+    }
+
     if prompt.trim().is_empty() {
         debug!("Post-processing skipped because the selected prompt is empty");
         return PostProcessOutcome::Failed;
@@ -291,12 +306,12 @@ async fn post_process_transcription(
     // Ask these providers to skip reasoning/thinking — post-processing rarely
     // benefits from it and it adds seconds of latency. llm_client picks the
     // field the endpoint understands and retries without it if rejected.
-    let disable_reasoning = matches!(provider.id.as_str(), "custom" | "openrouter");
+    let disable_reasoning = matches!(provider.id.as_str(), "custom" | "openrouter" | "ollama");
 
     if provider.supports_structured_output {
         debug!("Using structured outputs for provider '{}'", provider.id);
 
-        let system_prompt = build_system_prompt(&prompt);
+        let system_prompt = build_system_prompt(prompt);
         let user_content = transcription.to_string();
 
         // Handle Apple Intelligence separately since it uses native Swift APIs
@@ -737,6 +752,7 @@ impl ShortcutAction for TranscribeAction {
 
         let binding_id = binding_id.to_string(); // Clone binding_id for the async task
         let post_process = self.post_process;
+        let popup = self.popup;
         let cancel_generation = rm.cancel_generation();
 
         tauri::async_runtime::spawn(async move {
@@ -887,6 +903,16 @@ impl ShortcutAction for TranscribeAction {
 
                             if final_text.is_empty() {
                                 finish_without_text(&ah, input_silent, sample_count, stop_time);
+                            } else if popup {
+                                utils::hide_recording_overlay(&ah);
+                                set_tray_state(&ah, TrayIconState::Idle);
+                                crate::popup::show(&ah, final_text);
+                                emit_transcription_complete(
+                                    &ah,
+                                    TranscriptionOutcome::Typed,
+                                    sample_count,
+                                    stop_time,
+                                );
                             } else {
                                 let ah_clone = ah.clone();
                                 let paste_time = Instant::now();
@@ -1093,11 +1119,22 @@ pub static ACTION_MAP: Lazy<HashMap<String, Arc<dyn ShortcutAction>>> = Lazy::ne
         "transcribe".to_string(),
         Arc::new(TranscribeAction {
             post_process: false,
+            popup: false,
         }) as Arc<dyn ShortcutAction>,
     );
     map.insert(
         "transcribe_with_post_process".to_string(),
-        Arc::new(TranscribeAction { post_process: true }) as Arc<dyn ShortcutAction>,
+        Arc::new(TranscribeAction {
+            post_process: true,
+            popup: false,
+        }) as Arc<dyn ShortcutAction>,
+    );
+    map.insert(
+        "transcribe_with_popup".to_string(),
+        Arc::new(TranscribeAction {
+            post_process: false,
+            popup: true,
+        }) as Arc<dyn ShortcutAction>,
     );
     map.insert(
         "cancel".to_string(),

@@ -348,6 +348,10 @@
           "transcribe_with_post_process": {
             "name": "Pintasan Pascaproses",
             "description": "Opsional: pintasan khusus yang selalu menerapkan pascaproses AI pada transkripsi Anda."
+          },
+          "transcribe_with_popup": {
+            "name": "Writing Tools Hotkey",
+            "description": "Record your voice, then open the writing tools popup to proofread, rewrite or reformat the text before pasting."
           }
         },
         "errors": {
@@ -994,5 +998,14 @@
     "learnMore": "Cara memperbaiki",
     "recorderBlocked": "Pintasan tidak dapat direkam saat ini — macOS Secure Input memblokir peristiwa tombol. Selesaikan peringatan Secure Input terlebih dahulu.",
     "dismiss": "Tutup"
+  },
+  "popup": {
+    "transcript": "Transcript",
+    "customPlaceholder": "Describe a change… (e.g. \"make it a bulleted list\")",
+    "apply": "Apply",
+    "copy": "Copy",
+    "pasteResult": "Paste result",
+    "close": "Close",
+    "paste": "Paste"
   }
 }

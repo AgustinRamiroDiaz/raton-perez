@@ -348,6 +348,10 @@
           "transcribe_with_post_process": {
             "name": "Klávesa pro následné zpracování",
             "description": "Volitelné: Vyhrazená klávesová zkratka, která vždy použije AI následné zpracování na váš přepis."
+          },
+          "transcribe_with_popup": {
+            "name": "Writing Tools Hotkey",
+            "description": "Record your voice, then open the writing tools popup to proofread, rewrite or reformat the text before pasting."
           }
         },
         "errors": {
@@ -994,5 +998,14 @@
     "learnMore": "Jak to vyřešit",
     "recorderBlocked": "Zkratky teď nelze nahrát — Secure Input v macOS blokuje události kláves. Nejprve vyřešte upozornění na Secure Input.",
     "dismiss": "Zavřít"
+  },
+  "popup": {
+    "transcript": "Transcript",
+    "customPlaceholder": "Describe a change… (e.g. \"make it a bulleted list\")",
+    "apply": "Apply",
+    "copy": "Copy",
+    "pasteResult": "Paste result",
+    "close": "Close",
+    "paste": "Paste"
   }
 }

@@ -348,6 +348,10 @@
           "transcribe_with_post_process": {
             "name": "Бърз клавиш за постобработка",
             "description": "По избор: отделна комбинация, която винаги прилага ИИ постобработка върху транскрипцията."
+          },
+          "transcribe_with_popup": {
+            "name": "Writing Tools Hotkey",
+            "description": "Record your voice, then open the writing tools popup to proofread, rewrite or reformat the text before pasting."
           }
         },
         "errors": {
@@ -994,5 +998,14 @@
     "learnMore": "Как да поправите това",
     "recorderBlocked": "В момента не могат да се записват бързи клавиши — Secure Input на macOS блокира клавишните събития. Първо отстранете предупреждението за Secure Input.",
     "dismiss": "Отхвърляне"
+  },
+  "popup": {
+    "transcript": "Transcript",
+    "customPlaceholder": "Describe a change… (e.g. \"make it a bulleted list\")",
+    "apply": "Apply",
+    "copy": "Copy",
+    "pasteResult": "Paste result",
+    "close": "Close",
+    "paste": "Paste"
   }
 }

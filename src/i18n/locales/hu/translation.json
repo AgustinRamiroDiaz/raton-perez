@@ -348,6 +348,10 @@
           "transcribe_with_post_process": {
             "name": "Utófeldolgozás billentyűparancsa",
             "description": "Opcionális: külön billentyűparancs, amely az átiratra mindig AI-alapú utófeldolgozást alkalmaz."
+          },
+          "transcribe_with_popup": {
+            "name": "Writing Tools Hotkey",
+            "description": "Record your voice, then open the writing tools popup to proofread, rewrite or reformat the text before pasting."
           }
         },
         "errors": {
@@ -994,5 +998,14 @@
     "learnMore": "Megoldás",
     "recorderBlocked": "Most nem lehet billentyűparancsot rögzíteni: a macOS Biztonságos bevitele blokkolja a billentyűeseményeket. Előbb szüntesd meg a Biztonságos bevitel okozta problémát.",
     "dismiss": "Elrejtés"
+  },
+  "popup": {
+    "transcript": "Transcript",
+    "customPlaceholder": "Describe a change… (e.g. \"make it a bulleted list\")",
+    "apply": "Apply",
+    "copy": "Copy",
+    "pasteResult": "Paste result",
+    "close": "Close",
+    "paste": "Paste"
   }
 }

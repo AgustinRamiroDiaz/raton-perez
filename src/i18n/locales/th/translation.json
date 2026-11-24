@@ -348,6 +348,10 @@
           "transcribe_with_post_process": {
             "name": "ปุ่มลัดปรับแต่งข้อความ",
             "description": "ตัวเลือกเสริม: ปุ่มลัดเฉพาะสำหรับใช้ AI ปรับแต่งข้อความที่ถอดได้ทุกครั้ง"
+          },
+          "transcribe_with_popup": {
+            "name": "Writing Tools Hotkey",
+            "description": "Record your voice, then open the writing tools popup to proofread, rewrite or reformat the text before pasting."
           }
         },
         "errors": {
@@ -994,5 +998,14 @@
     "learnMore": "วิธีแก้ไข",
     "recorderBlocked": "ไม่สามารถเปลี่ยนปุ่มลัดได้ในขณะนี้ — Secure Input ของ macOS กำลังบล็อกการกดปุ่มอยู่ โปรดแก้ไขคำเตือน Secure Input ก่อน",
     "dismiss": "ปิด"
+  },
+  "popup": {
+    "transcript": "Transcript",
+    "customPlaceholder": "Describe a change… (e.g. \"make it a bulleted list\")",
+    "apply": "Apply",
+    "copy": "Copy",
+    "pasteResult": "Paste result",
+    "close": "Close",
+    "paste": "Paste"
   }
 }

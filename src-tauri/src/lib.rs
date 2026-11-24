@@ -20,6 +20,7 @@ mod memory;
 mod notices;
 mod overlay;
 mod paste_tx;
+mod popup;
 pub mod portable;
 #[cfg(target_os = "linux")]
 mod primary_selection;
@@ -758,6 +759,9 @@ pub fn run(cli_args: CliArgs) {
             trigger_update_check,
             show_main_window_command,
             commands::cancel_operation,
+            popup::popup_get_text,
+            popup::popup_run_prompt,
+            popup::popup_paste,
             commands::is_portable,
             commands::is_update_checks_locked,
             commands::get_app_dir_path,
@@ -1017,7 +1021,7 @@ pub fn run(cli_args: CliArgs) {
             // for portable mode (redirects WebView2 cache to portable Data dir)
             let mut win_builder =
                 tauri::WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::App("/".into()))
-                    .title("Handy")
+                    .title("Ratón Pérez")
                     .inner_size(utils::MAIN_WINDOW_SIZE.0, utils::MAIN_WINDOW_SIZE.1)
                     .min_inner_size(utils::MAIN_WINDOW_SIZE.0, utils::MAIN_WINDOW_SIZE.1)
                     .resizable(true)

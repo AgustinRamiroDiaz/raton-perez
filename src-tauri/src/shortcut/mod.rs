@@ -1260,6 +1260,7 @@ pub fn add_post_process_prompt(
         id: id.clone(),
         name,
         prompt,
+        open_in_window: false,
     };
 
     settings.post_process_prompts.push(new_prompt.clone());
@@ -1355,7 +1356,7 @@ pub async fn fetch_post_process_models(
         .unwrap_or_default();
 
     // Skip fetching if no API key for providers that typically need one
-    if api_key.trim().is_empty() && provider.id != "custom" {
+    if api_key.trim().is_empty() && !matches!(provider.id.as_str(), "custom" | "ollama") {
         return Err(format!(
             "API key is required for {}. Please add an API key to list available models.",
             provider.label

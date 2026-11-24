@@ -112,25 +112,27 @@ const PostProcessingSettingsApiComponent: React.FC = () => {
             </SettingContainer>
           )}
 
-          <SettingContainer
-            title={t("settings.postProcessing.api.apiKey.title")}
-            description={t("settings.postProcessing.api.apiKey.description")}
-            descriptionMode="tooltip"
-            layout="horizontal"
-            grouped={true}
-          >
-            <div className="flex items-center gap-2">
-              <ApiKeyField
-                value={state.apiKey}
-                onBlur={state.handleApiKeyChange}
-                placeholder={t(
-                  "settings.postProcessing.api.apiKey.placeholder",
-                )}
-                disabled={state.isApiKeyUpdating}
-                className="min-w-[320px]"
-              />
-            </div>
-          </SettingContainer>
+          {state.selectedProvider?.id !== "ollama" && (
+            <SettingContainer
+              title={t("settings.postProcessing.api.apiKey.title")}
+              description={t("settings.postProcessing.api.apiKey.description")}
+              descriptionMode="tooltip"
+              layout="horizontal"
+              grouped={true}
+            >
+              <div className="flex items-center gap-2">
+                <ApiKeyField
+                  value={state.apiKey}
+                  onBlur={state.handleApiKeyChange}
+                  placeholder={t(
+                    "settings.postProcessing.api.apiKey.placeholder",
+                  )}
+                  disabled={state.isApiKeyUpdating}
+                  className="min-w-[320px]"
+                />
+              </div>
+            </SettingContainer>
+          )}
         </>
       )}
 
@@ -470,6 +472,11 @@ export const PostProcessingSettings: React.FC = () => {
       <SettingsGroup title={t("settings.postProcessing.hotkey.title")}>
         <ShortcutInput
           shortcutId="transcribe_with_post_process"
+          descriptionMode="tooltip"
+          grouped={true}
+        />
+        <ShortcutInput
+          shortcutId="transcribe_with_popup"
           descriptionMode="tooltip"
           grouped={true}
         />
