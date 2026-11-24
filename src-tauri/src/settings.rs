@@ -727,13 +727,22 @@ fn default_show_tray_icon() -> bool {
     true
 }
 
-// The custom provider points at a local Ollama server, which the demo relies on.
+// The demo relies on a local Ollama server.
 fn default_post_process_provider_id() -> String {
-    "custom".to_string()
+    "ollama".to_string()
 }
 
 fn default_post_process_providers() -> Vec<PostProcessProvider> {
     let mut providers = vec![
+        PostProcessProvider {
+            id: "ollama".to_string(),
+            label: "Ollama (local)".to_string(),
+            base_url: "http://localhost:11434/v1".to_string(),
+            allow_base_url_edit: false,
+            models_endpoint: Some("/models".to_string()),
+            supports_structured_output: false,
+            api_format: PostProcessApiFormat::OpenAi,
+        },
         PostProcessProvider {
             id: "openai".to_string(),
             label: "OpenAI".to_string(),
@@ -846,7 +855,7 @@ fn default_model_for_provider(provider_id: &str) -> String {
     if provider_id == APPLE_INTELLIGENCE_PROVIDER_ID {
         return APPLE_INTELLIGENCE_DEFAULT_MODEL_ID.to_string();
     }
-    if provider_id == "custom" {
+    if provider_id == "ollama" {
         return OLLAMA_DEFAULT_MODEL.to_string();
     }
     String::new()

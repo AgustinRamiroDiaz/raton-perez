@@ -306,7 +306,7 @@ pub(crate) async fn post_process_with_prompt(
     // Ask these providers to skip reasoning/thinking — post-processing rarely
     // benefits from it and it adds seconds of latency. llm_client picks the
     // field the endpoint understands and retries without it if rejected.
-    let disable_reasoning = matches!(provider.id.as_str(), "custom" | "openrouter");
+    let disable_reasoning = matches!(provider.id.as_str(), "custom" | "openrouter" | "ollama");
 
     if provider.supports_structured_output {
         debug!("Using structured outputs for provider '{}'", provider.id);

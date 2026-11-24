@@ -1,4 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+const OLLAMA_PROVIDER_ID = "ollama";
 import { useSettings } from "../../../hooks/useSettings";
 import {
   commands,
@@ -111,7 +113,8 @@ export const usePostProcessProviderState = (): PostProcessProviderState => {
         const hasBaseUrl = (provider?.base_url ?? "").trim() !== "";
         const hasApiKey = apiKey.trim() !== "";
 
-        if (provider?.id === "custom" ? hasBaseUrl : hasApiKey) {
+        const keyless = provider?.id === "custom" || provider?.id === "ollama";
+        if (keyless ? hasBaseUrl : hasApiKey) {
           void fetchPostProcessModels(providerId);
         }
       }
@@ -228,7 +231,12 @@ export const usePostProcessProviderState = (): PostProcessProviderState => {
 
   const isCustomProvider = selectedProvider?.id === "custom";
 
-  // No automatic fetching - user must click refresh button
+  // Ollama is local and keyless, so list its installed models as soon as it's shown.
+  useEffect(() => {
+    if (selectedProviderId === OLLAMA_PROVIDER_ID) {
+      void fetchPostProcessModels(OLLAMA_PROVIDER_ID);
+    }
+  }, [selectedProviderId, fetchPostProcessModels]);
 
   return {
     providerOptions,

@@ -6,7 +6,7 @@ The name comes from our initials (T, R, A → RAT) and from _El Ratón Pérez_, 
 
 ## Demo requirements
 
-**[Ollama](https://ollama.com) is required for the demo.** The LLM actions run locally through Ollama, which Ratón Pérez uses by default (the "Custom" provider at `http://localhost:11434/v1`, model `llama3.2:3b`).
+**[Ollama](https://ollama.com) is required for the demo.** The LLM actions run locally through Ollama, which Ratón Pérez uses by default (the "Ollama (local)" provider, model `llama3.2:3b`).
 
 ```bash
 # 1. Install Ollama: https://ollama.com/download
@@ -16,7 +16,7 @@ ollama pull llama3.2:3b
 ollama serve
 ```
 
-To use a different model, or a cloud provider such as OpenAI, Anthropic or Groq, change it on the **Post-Processing** page in settings.
+The **Post-Processing** page in settings lists the models you have installed in Ollama, so you can switch models there. You can also pick a cloud provider such as OpenAI, Anthropic or Groq.
 
 ## Using it
 
