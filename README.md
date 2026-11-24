@@ -1,4 +1,37 @@
-# Handy
+# 🐭 Ratón Pérez
+
+Speak, then polish. Ratón Pérez is a fork of [Handy](https://github.com/cjpais/Handy) (local speech-to-text) that adds a writing-tools popup inspired by [WritingTools](https://github.com/theJayTea/WritingTools): after you dictate, you can proofread, rewrite, change the tone, summarize, extract key points or build a table with an LLM before pasting.
+
+The name comes from our initials (T, R, A → RAT) and from *El Ratón Pérez*, the Argentine tooth fairy. Teeth help us speak.
+
+## Demo requirements
+
+**[Ollama](https://ollama.com) is required for the demo.** The LLM actions run locally through Ollama, which Ratón Pérez uses by default (the "Custom" provider at `http://localhost:11434/v1`, model `llama3.2:3b`).
+
+```bash
+# 1. Install Ollama: https://ollama.com/download
+# 2. Pull the default model
+ollama pull llama3.2:3b
+# 3. Make sure the server is running (the desktop app starts it automatically)
+ollama serve
+```
+
+To use a different model, or a cloud provider such as OpenAI, Anthropic or Groq, change it on the **Post-Processing** page in settings.
+
+## Using it
+
+1. Run the app: `bun install && bun run tauri dev` (see [BUILD.md](BUILD.md) for system dependencies).
+2. Download a speech model when the app asks.
+3. Press **Ctrl+Alt+R** (**Option+Shift+R** on macOS), speak, then press it again.
+4. The popup opens with your transcript. Edit it, click an action (Proofread, Rewrite, Friendly, Professional, Concise, Summary, Key Points, Table) or type a custom instruction, then click **Paste**.
+
+The other Handy hotkeys still work: plain dictation, and dictation with automatic cleanup.
+
+---
+
+The original Handy README follows.
+
+## Handy
 
 [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/WVBeWsNXK4)
 

@@ -727,8 +727,9 @@ fn default_show_tray_icon() -> bool {
     true
 }
 
+// The custom provider points at a local Ollama server, which the demo relies on.
 fn default_post_process_provider_id() -> String {
-    "openai".to_string()
+    "custom".to_string()
 }
 
 fn default_post_process_providers() -> Vec<PostProcessProvider> {
@@ -839,9 +840,14 @@ fn default_post_process_api_keys() -> SecretMap {
     SecretMap(map)
 }
 
+const OLLAMA_DEFAULT_MODEL: &str = "llama3.2:3b";
+
 fn default_model_for_provider(provider_id: &str) -> String {
     if provider_id == APPLE_INTELLIGENCE_PROVIDER_ID {
         return APPLE_INTELLIGENCE_DEFAULT_MODEL_ID.to_string();
+    }
+    if provider_id == "custom" {
+        return OLLAMA_DEFAULT_MODEL.to_string();
     }
     String::new()
 }
