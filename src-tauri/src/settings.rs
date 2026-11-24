@@ -714,7 +714,7 @@ fn default_theme() -> Theme {
 }
 
 fn default_post_process_enabled() -> bool {
-    false
+    true
 }
 
 fn default_app_language() -> String {
@@ -945,7 +945,9 @@ fn default_typing_tool() -> TypingTool {
 }
 
 fn ensure_post_process_defaults(settings: &mut AppSettings) -> bool {
-    let mut changed = false;
+    // Ratón Pérez is built around the LLM actions, so post-processing is always on.
+    let mut changed = !settings.post_process_enabled;
+    settings.post_process_enabled = true;
     for provider in default_post_process_providers() {
         // Use match to do a single lookup - either sync existing or add new
         match settings
