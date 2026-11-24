@@ -630,12 +630,10 @@ fn default_overlay_position() -> OverlayPosition {
 }
 
 fn default_overlay_style() -> OverlayStyle {
-    // Linux hides the overlay by default; other platforms show the live overlay.
-    // Position is independent and only selects top vs. bottom placement.
-    #[cfg(target_os = "linux")]
-    return OverlayStyle::None;
-    #[cfg(not(target_os = "linux"))]
-    return OverlayStyle::Live;
+    // On everywhere, Linux included: without it there's no sign the hotkey
+    // started recording. Live falls back to the compact pill for models that
+    // don't stream. Position only selects top vs. bottom placement.
+    OverlayStyle::Live
 }
 
 fn default_vad_enabled() -> bool {
