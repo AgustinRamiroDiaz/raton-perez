@@ -297,6 +297,21 @@ pub(crate) async fn post_process_with_prompt(
         provider.id, model
     );
 
+    if provider.id == crate::claude_code::PROVIDER_ID {
+        let input = prompt.replace("${output}", transcription);
+        return match crate::claude_code::run(&model, &input).await {
+            Ok(text) if !text.is_empty() => PostProcessOutcome::Done(strip_invisible_chars(&text)),
+            Ok(_) => {
+                error!("Claude Code returned an empty response");
+                PostProcessOutcome::Failed
+            }
+            Err(e) => {
+                error!("Claude Code post-processing failed: {e}");
+                PostProcessOutcome::Failed
+            }
+        };
+    }
+
     let api_key = settings
         .post_process_api_keys
         .get(&provider.id)

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const OLLAMA_PROVIDER_ID = "ollama";
+const KEYLESS_PROVIDERS = new Set(["custom", "ollama", "claude_code"]);
 import { useSettings } from "../../../hooks/useSettings";
 import {
   commands,
@@ -113,7 +114,8 @@ export const usePostProcessProviderState = (): PostProcessProviderState => {
         const hasBaseUrl = (provider?.base_url ?? "").trim() !== "";
         const hasApiKey = apiKey.trim() !== "";
 
-        const keyless = provider?.id === "custom" || provider?.id === "ollama";
+        const keyless =
+          provider?.id !== undefined && KEYLESS_PROVIDERS.has(provider.id);
         if (keyless ? hasBaseUrl : hasApiKey) {
           void fetchPostProcessModels(providerId);
         }

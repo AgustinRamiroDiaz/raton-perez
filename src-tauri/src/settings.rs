@@ -739,6 +739,15 @@ fn default_post_process_providers() -> Vec<PostProcessProvider> {
             api_format: PostProcessApiFormat::OpenAi,
         },
         PostProcessProvider {
+            id: crate::claude_code::PROVIDER_ID.to_string(),
+            label: "Claude Code (your Claude login)".to_string(),
+            base_url: "claude-code://local".to_string(),
+            allow_base_url_edit: false,
+            models_endpoint: None,
+            supports_structured_output: false,
+            api_format: PostProcessApiFormat::OpenAi,
+        },
+        PostProcessProvider {
             id: "openai".to_string(),
             label: "OpenAI".to_string(),
             base_url: "https://api.openai.com/v1".to_string(),
@@ -849,6 +858,9 @@ const OLLAMA_DEFAULT_MODEL: &str = "llama3.2:3b";
 fn default_model_for_provider(provider_id: &str) -> String {
     if provider_id == APPLE_INTELLIGENCE_PROVIDER_ID {
         return APPLE_INTELLIGENCE_DEFAULT_MODEL_ID.to_string();
+    }
+    if provider_id == crate::claude_code::PROVIDER_ID {
+        return crate::claude_code::DEFAULT_MODEL.to_string();
     }
     if provider_id == "ollama" {
         return OLLAMA_DEFAULT_MODEL.to_string();
