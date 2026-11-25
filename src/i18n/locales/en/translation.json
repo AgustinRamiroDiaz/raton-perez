@@ -1003,7 +1003,7 @@
     "customPlaceholder": "Describe a change… (e.g. \"make it a bulleted list\")",
     "apply": "Apply",
     "copy": "Copy",
-    "paste": "Paste",
+    "paste": "Insert",
     "original": "Original",
     "final": "Final"
   }

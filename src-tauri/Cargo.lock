@@ -2466,11 +2466,13 @@ dependencies = [
  "arboard",
  "chrono",
  "clap",
+ "core-foundation 0.10.1",
  "earshot",
  "enigo",
  "env_filter",
  "ferrous-opencc",
  "futures-util",
+ "gdkx11",
  "gtk",
  "gtk-layer-shell",
  "handy-keys",
@@ -2530,6 +2532,7 @@ dependencies = [
  "whatlang",
  "windows 0.61.3",
  "winreg 0.55.0",
+ "zbus",
 ]
 
 [[package]]

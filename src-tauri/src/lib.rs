@@ -4,6 +4,8 @@ mod apple_intelligence;
 mod audio_feedback;
 pub mod audio_toolkit;
 mod autostart;
+#[cfg(any(target_os = "macos", target_os = "linux"))]
+mod caret;
 mod catalog;
 mod chinese_script;
 mod claude_code;
