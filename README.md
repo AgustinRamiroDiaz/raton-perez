@@ -23,7 +23,7 @@ The name comes from our initials (T, R, A → RAT) and from _El Ratón Pérez_, 
 | [Bun](https://bun.sh/)                          | Installs and runs the frontend               |
 | Platform build tools (see [BUILD.md](BUILD.md)) | Xcode Command Line Tools on macOS, and so on |
 
-Ollama is only needed for the LLM actions. If you choose a cloud provider in settings, you can skip it.
+Ollama is only needed for the LLM actions. If you choose a cloud provider in settings, or the [hackathon proxy](#hackathon-use-the-hosted-bedrock-proxy-no-ollama), you can skip it.
 
 ## Installation
 
@@ -88,6 +88,18 @@ All shortcuts can be changed in Settings.
 ### Changing the model or provider
 
 Open **Settings → Post-Processing**. With the "Ollama (local)" provider, the page lists the models you have installed in Ollama. Cloud providers need an API key. The preset prompts can be edited on the same page.
+
+### Hackathon: use the hosted Bedrock proxy (no Ollama)
+
+During the Particle41 hackathon, team-4 runs an OpenAI-compatible endpoint backed by AWS Bedrock, so you can try the popup actions without installing a local model. In **Settings → Post-Processing**, choose the **Custom** provider and set:
+
+| Field    | Value                                              |
+| -------- | -------------------------------------------------- |
+| Base URL | `https://raton-perez.dev.apps.particle41.ninja/v1` |
+| API key  | ask team-4 in the hackathon Slack channel          |
+| Model    | `claude`                                           |
+
+The key is shared by every hackathon participant, so don't post it publicly or commit it. Team members can read it from the cluster; the steps are in the proxy's repository, [Particle41/raton-perez-proxy](https://github.com/Particle41/raton-perez-proxy#reading-the-api-key) (Particle41 members only).
 
 ## Common issues and workarounds
 
