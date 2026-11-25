@@ -24,7 +24,7 @@ pub fn show(app: &AppHandle, text: String) {
                 tauri::WebviewUrl::App("src/popup/index.html".into()),
             )
             .title("Ratón Pérez")
-            .inner_size(560.0, 460.0)
+            .inner_size(600.0, 640.0)
             .always_on_top(true)
             .center();
             if let Some(data_dir) = crate::portable::data_dir() {
