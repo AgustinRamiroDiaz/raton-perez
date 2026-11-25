@@ -16,12 +16,12 @@ The name comes from our initials (T, R, A → RAT) and from _El Ratón Pérez_, 
 
 ## Requirements
 
-| Requirement                                       | Why                                              |
-| ------------------------------------------------- | ------------------------------------------------ |
-| [Ollama](https://ollama.com/download)             | Runs the default LLM for the popup actions       |
-| [Rust](https://rustup.rs/) (latest stable)        | Builds the app                                   |
-| [Bun](https://bun.sh/)                            | Installs and runs the frontend                   |
-| Platform build tools (see [BUILD.md](BUILD.md))   | Xcode Command Line Tools on macOS, and so on     |
+| Requirement                                     | Why                                          |
+| ----------------------------------------------- | -------------------------------------------- |
+| [Ollama](https://ollama.com/download)           | Runs the default LLM for the popup actions   |
+| [Rust](https://rustup.rs/) (latest stable)      | Builds the app                               |
+| [Bun](https://bun.sh/)                          | Installs and runs the frontend               |
+| Platform build tools (see [BUILD.md](BUILD.md)) | Xcode Command Line Tools on macOS, and so on |
 
 Ollama is only needed for the LLM actions. If you choose a cloud provider in settings, you can skip it.
 
