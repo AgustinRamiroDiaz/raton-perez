@@ -13,13 +13,13 @@ const HIDDEN_PROMPTS = new Set(["default_improve_transcriptions"]);
 
 const Popup: React.FC = () => {
   const { t } = useTranslation();
-  const [text, setText] = useState("");
+  // Every action reads `original` and writes `final`, so actions don't stack.
+  const [original, setOriginal] = useState("");
+  const [final, setFinal] = useState("");
   const [prompts, setPrompts] = useState<LLMPrompt[]>([]);
   const [custom, setCustom] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  // Results of "open in window" prompts; replacing prompts edit `text` instead.
-  const [result, setResult] = useState<string | null>(null);
 
   const loadPrompts = async () => {
     const res = await commands.getAppSettings();
@@ -32,14 +32,18 @@ const Popup: React.FC = () => {
     }
   };
 
+  const reset = (text: string) => {
+    setOriginal(text);
+    setFinal(text);
+    setError(null);
+    setCustom("");
+  };
+
   useEffect(() => {
-    invoke<string>("popup_get_text").then(setText);
+    invoke<string>("popup_get_text").then(reset);
     loadPrompts();
     const unlisten = listen<string>("popup-text", (e) => {
-      setText(e.payload);
-      setResult(null);
-      setError(null);
-      setCustom("");
+      reset(e.payload);
       loadPrompts();
     });
     return () => {
@@ -51,18 +55,17 @@ const Popup: React.FC = () => {
     key: string,
     promptId: string | null,
     instruction: string | null,
-    openInWindow: boolean,
   ) => {
     setBusy(key);
     setError(null);
     try {
-      const out = await invoke<string>("popup_run_prompt", {
-        text,
-        promptId,
-        custom: instruction,
-      });
-      if (openInWindow) setResult(out);
-      else setText(out);
+      setFinal(
+        await invoke<string>("popup_run_prompt", {
+          text: original,
+          promptId,
+          custom: instruction,
+        }),
+      );
     } catch (e) {
       setError(String(e));
     } finally {
@@ -70,16 +73,20 @@ const Popup: React.FC = () => {
     }
   };
 
-  const paste = (value: string) => invoke("popup_paste", { text: value });
+  const disabled = busy !== null || !original.trim();
 
   return (
     <div className="h-screen flex flex-col gap-3 p-4 bg-background text-text">
-      <Textarea
-        className="flex-1 w-full font-normal"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        aria-label={t("popup.transcript")}
-      />
+      <label className="flex-1 flex flex-col gap-1 min-h-0">
+        <span className="text-xs font-semibold opacity-70">
+          {t("popup.original")}
+        </span>
+        <Textarea
+          className="flex-1 w-full font-normal resize-none"
+          value={original}
+          onChange={(e) => setOriginal(e.target.value)}
+        />
+      </label>
 
       <div className="grid grid-cols-4 gap-2">
         {prompts.map((p) => (
@@ -87,8 +94,8 @@ const Popup: React.FC = () => {
             key={p.id}
             variant="secondary"
             size="sm"
-            disabled={busy !== null || !text.trim()}
-            onClick={() => run(p.id, p.id, null, p.open_in_window ?? false)}
+            disabled={disabled}
+            onClick={() => run(p.id, p.id, null)}
           >
             {busy === p.id ? "…" : p.name}
           </Button>
@@ -99,7 +106,7 @@ const Popup: React.FC = () => {
         className="flex gap-2"
         onSubmit={(e) => {
           e.preventDefault();
-          if (custom.trim()) run("custom", null, custom, false);
+          if (custom.trim()) run("custom", null, custom);
         }}
       >
         <input
@@ -112,7 +119,7 @@ const Popup: React.FC = () => {
           type="submit"
           variant="secondary"
           size="sm"
-          disabled={busy !== null || !custom.trim() || !text.trim()}
+          disabled={disabled || !custom.trim()}
         >
           {busy === "custom" ? "…" : t("popup.apply")}
         </Button>
@@ -120,25 +127,16 @@ const Popup: React.FC = () => {
 
       {error && <p className="text-sm text-red-500">{error}</p>}
 
-      {result !== null && (
-        <div className="flex flex-col gap-2 max-h-48">
-          <pre className="overflow-auto whitespace-pre-wrap text-sm p-2 bg-wash rounded-md border border-line">
-            {result}
-          </pre>
-          <div className="flex gap-2 justify-end">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigator.clipboard.writeText(result)}
-            >
-              {t("popup.copy")}
-            </Button>
-            <Button variant="secondary" size="sm" onClick={() => paste(result)}>
-              {t("popup.pasteResult")}
-            </Button>
-          </div>
-        </div>
-      )}
+      <label className="flex-1 flex flex-col gap-1 min-h-0">
+        <span className="text-xs font-semibold opacity-70">
+          {t("popup.final")}
+        </span>
+        <Textarea
+          className="flex-1 w-full font-normal resize-none"
+          value={final}
+          onChange={(e) => setFinal(e.target.value)}
+        />
+      </label>
 
       <div className="flex gap-2 justify-end">
         <Button
@@ -149,10 +147,18 @@ const Popup: React.FC = () => {
           {t("popup.close")}
         </Button>
         <Button
+          variant="ghost"
+          size="sm"
+          disabled={!final.trim()}
+          onClick={() => navigator.clipboard.writeText(final)}
+        >
+          {t("popup.copy")}
+        </Button>
+        <Button
           variant="primary"
           size="sm"
-          disabled={!text.trim()}
-          onClick={() => paste(text)}
+          disabled={!final.trim()}
+          onClick={() => invoke("popup_paste", { text: final })}
         >
           {t("popup.paste")}
         </Button>

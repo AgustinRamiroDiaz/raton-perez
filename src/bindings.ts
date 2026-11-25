@@ -1260,11 +1260,7 @@ export type KeyboardImplementation = "tauri" | "handy_keys" |
  * (e.g. from a Wayland compositor keybinding).
  */
 "none"
-export type LLMPrompt = { id: string; name: string; prompt: string; 
-/**
- * Show the result in the popup instead of pasting it (summaries, tables).
- */
-open_in_window?: boolean }
+export type LLMPrompt = { id: string; name: string; prompt: string }
 /**
  * When Handy's spoken-language detector picks the language for Auto.
  */
