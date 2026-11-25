@@ -18,6 +18,8 @@ ollama serve
 
 The **Post-Processing** page in settings lists the models you have installed in Ollama, so you can switch models there. You can also pick a cloud provider such as OpenAI, Anthropic or Groq.
 
+**No Ollama? Use Claude Code.** If you have [Claude Code](https://claude.com/claude-code) installed and logged in, pick **Claude Code (your Claude login)** as the provider. No API key is needed; requests use your Claude plan's limits. `haiku` is the fastest model (about 2–3 s per action).
+
 ## Using it
 
 1. Run the app: `bun install && bun run tauri dev` (see [BUILD.md](BUILD.md) for system dependencies).
