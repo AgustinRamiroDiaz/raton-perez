@@ -3,6 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <title>Ratón Pérez</title>
+    <!-- On macOS the popup is a transparent panel; Popup.tsx draws the card. -->
+    <style>
+      :root,
+      body {
+        background: transparent !important;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
