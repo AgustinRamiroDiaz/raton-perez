@@ -1,565 +1,168 @@
 # 🐭 Ratón Pérez
 
-Speak, then polish. Ratón Pérez is a fork of [Handy](https://github.com/cjpais/Handy) (local speech-to-text) that adds a writing-tools popup inspired by [WritingTools](https://github.com/theJayTea/WritingTools): after you dictate, you can proofread, rewrite, change the tone, summarize, extract key points or build a table with an LLM before pasting.
+Speak, then polish. Ratón Pérez is a desktop dictation app: press a shortcut, speak, and your words are transcribed locally. Before pasting, a writing-tools popup lets you proofread, rewrite, change the tone, summarize, extract key points or build a table with an LLM.
+
+It is a fork of [Handy](https://github.com/cjpais/Handy) (local speech-to-text) with a popup inspired by [WritingTools](https://github.com/theJayTea/WritingTools).
 
 The name comes from our initials (T, R, A → RAT) and from _El Ratón Pérez_, the Argentine tooth fairy. Teeth help us speak.
 
-## Demo requirements
+## What it does
 
-**[Ollama](https://ollama.com) is required for the demo.** The LLM actions run locally through Ollama, which Ratón Pérez uses by default (the "Ollama (local)" provider, model `llama3.2:3b`).
+- **Local transcription.** Audio is transcribed on your machine with Whisper or Parakeet models. Nothing is sent to the cloud for speech-to-text.
+- **Writing-tools popup.** After dictating, the popup shows your transcript in an editable **Original** box and the result in an editable **Final** box. Every action reads Original and replaces Final, so actions don't stack.
+- **Preset actions.** Proofread, Rewrite, Friendly, Professional, Concise, Summary, Key Points and Table, plus a free-text custom instruction.
+- **Local LLM by default.** Actions run through [Ollama](https://ollama.com) with `llama3.2:3b`. You can switch to OpenAI, Anthropic, Groq, OpenRouter, Cerebras, Z.AI, AWS Bedrock, Apple Intelligence (Apple Silicon Macs) or a custom OpenAI-compatible endpoint.
+- **Plain dictation still works.** The original Handy shortcuts paste straight into the focused text field, with or without automatic cleanup.
+
+## Requirements
+
+| Requirement                                       | Why                                              |
+| ------------------------------------------------- | ------------------------------------------------ |
+| [Ollama](https://ollama.com/download)             | Runs the default LLM for the popup actions       |
+| [Rust](https://rustup.rs/) (latest stable)        | Builds the app                                   |
+| [Bun](https://bun.sh/)                            | Installs and runs the frontend                   |
+| Platform build tools (see [BUILD.md](BUILD.md))   | Xcode Command Line Tools on macOS, and so on     |
+
+Ollama is only needed for the LLM actions. If you choose a cloud provider in settings, you can skip it.
+
+## Installation
+
+There may be no prebuilt installer; check the [Releases page](https://github.com/AgustinRamiroDiaz/raton-perez/releases) first. Otherwise run it from source.
+
+### 1. Install the build tools
+
+macOS:
 
 ```bash
-# 1. Install Ollama: https://ollama.com/download
-# 2. Pull the default model
-ollama pull llama3.2:3b
-# 3. Make sure the server is running (the desktop app starts it automatically)
-ollama serve
+xcode-select --install
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+curl -fsSL https://bun.sh/install | bash
 ```
 
-The **Post-Processing** page in settings lists the models you have installed in Ollama, so you can switch models there. You can also pick a cloud provider such as OpenAI, Anthropic or Groq.
+Windows and Linux need extra system packages. They are listed in [BUILD.md](BUILD.md).
 
-**No Ollama? Use Claude Code.** If you have [Claude Code](https://claude.com/claude-code) installed and logged in, pick **Claude Code (your Claude login)** as the provider. No API key is needed; requests use your Claude plan's limits. `haiku` is the fastest model (about 2–3 s per action).
+### 2. Install Ollama and pull the default model
+
+Install Ollama from <https://ollama.com/download>, then:
+
+```bash
+ollama pull llama3.2:3b
+```
+
+The Ollama desktop app starts its server automatically. If you only have the CLI, run `ollama serve`.
+
+### 3. Clone and run
+
+```bash
+git clone https://github.com/AgustinRamiroDiaz/raton-perez
+cd raton-perez
+bun install
+bun run tauri dev
+```
+
+The first run compiles the Rust side and takes a few minutes. To produce an installable bundle (`.dmg`, `.msi`, `.deb`, AppImage) instead, run `bun run tauri build`.
+
+### 4. First launch
+
+1. Grant microphone and accessibility permissions when the system asks.
+2. Download a speech model when the app asks.
 
 ## Using it
 
-1. Run the app: `bun install && bun run tauri dev` (see [BUILD.md](BUILD.md) for system dependencies).
-2. Download a speech model when the app asks.
-3. Press **Ctrl+Alt+R** (**Option+Shift+R** on macOS), speak, then press it again.
-4. The popup opens with your transcript. Edit it, click an action (Proofread, Rewrite, Friendly, Professional, Concise, Summary, Key Points, Table) or type a custom instruction, then click **Paste**.
+1. Press the writing-tools shortcut, speak, then press it again.
+2. The popup opens with your transcript in **Original**. Edit it if needed.
+3. Click an action or type a custom instruction. The result appears in **Final**, which you can also edit.
+4. Click **Paste** to insert the text into the app you were using, or **Copy** to put it on the clipboard.
 
-The other Handy hotkeys still work: plain dictation, and dictation with automatic cleanup.
+### Default shortcuts
 
----
+| Action                                      | macOS              | Windows          | Linux                |
+| ------------------------------------------- | ------------------ | ---------------- | -------------------- |
+| Transcribe to writing tools (popup)         | Option+Shift+R     | Ctrl+Alt+R       | Ctrl+Alt+R           |
+| Transcribe and paste                        | Option+Space       | Ctrl+Space       | Ctrl+Alt+Space       |
+| Transcribe with automatic cleanup and paste | Option+Shift+Space | Ctrl+Shift+Space | Ctrl+Alt+Shift+Space |
+| Cancel                                      | Escape             | Escape           | Escape               |
 
-The original Handy README follows.
+All shortcuts can be changed in Settings.
 
-## Handy
+### Changing the model or provider
 
-[![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/WVBeWsNXK4)
+Open **Settings → Post-Processing**. With the "Ollama (local)" provider, the page lists the models you have installed in Ollama. Cloud providers need an API key. The preset prompts can be edited on the same page.
 
-**A free, open source, and extensible speech-to-text application that works completely offline.**
+## Common issues and workarounds
 
-Handy is a cross-platform desktop application that provides simple, privacy-focused speech transcription. Press a shortcut, speak, and have your words appear in any text field. This happens on your own computer without sending any information to the cloud.
+### The popup actions fail or return nothing
 
-## Why Handy?
+The default provider talks to Ollama at `http://localhost:11434`. Check that:
 
-Handy was created to fill the gap for a truly open source, extensible speech-to-text tool. As stated on [handy.computer](https://handy.computer):
+- Ollama is running (`ollama list` should respond).
+- The model is installed (`ollama pull llama3.2:3b`), or pick an installed one in **Settings → Post-Processing**.
 
-- **Free**: Accessibility tooling belongs in everyone's hands, not behind a paywall
-- **Open Source**: Together we can build further. Extend Handy for yourself and contribute to something bigger
-- **Private**: Your voice stays on your computer. Get transcriptions without sending audio to the cloud
-- **Simple**: One tool, one job. Transcribe what you say and put it into a text box
-
-## How It Works
-
-1. **Press** a configurable keyboard shortcut: hold it to record and release to stop, or tap it to toggle recording on and off (Hold-only and Toggle-only modes are also available)
-2. **Speak** your words while the shortcut is active
-3. **Release** and Handy processes your speech using Whisper
-4. **Get** your transcribed text pasted directly into whatever app you're using
-
-The process is entirely local:
-
-- Silence is filtered using VAD (Voice Activity Detection) with Silero
-- Transcription uses your choice of models:
-  - **Whisper models** (Small/Medium/Turbo/Large) with GPU acceleration when available
-  - **Parakeet V3** - CPU-optimized model with excellent performance and automatic language detection
-- Works on Windows, macOS, and Linux
-
-## Quick Start
-
-### Installation
-
-1. Download the latest release from the [releases page](https://github.com/cjpais/Handy/releases) or the [website](https://handy.computer)
-   - **macOS**: Also available via [Homebrew cask](https://formulae.brew.sh/cask/handy): `brew install --cask handy`
-   - **Windows**: Also available via [winget](https://github.com/microsoft/winget-pkgs): `winget install cjpais.Handy` \
-     **Note:** The Homebrew cask and winget package are not maintained by the Handy developers.
-   - **Debian/Ubuntu**: Install the downloaded `.deb` with APT so required dependencies are installed automatically:
-     ```bash
-     sudo apt install ./Handy_*.deb
-     ```
-     Do not use `dpkg -i` unless the dependencies are already installed. If you already used it, run `sudo apt --fix-broken install`.
-2. Install the application
-3. Launch Handy and grant necessary system permissions (microphone, accessibility)
-4. Configure your preferred keyboard shortcuts in Settings
-5. Start transcribing!
-
-### Development Setup
-
-For detailed build instructions including platform-specific requirements, see [BUILD.md](BUILD.md).
-
-## Sponsors
-
-<div align="center">
-  We're grateful for the support of our sponsors who help make Handy possible:
-  <br><br>
-  <a href="https://wordcab.com">
-    <img src="sponsor-images/wordcab.png" alt="Wordcab" width="120" height="120">
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://github.com/epicenter-so/epicenter">
-    <img src="sponsor-images/epicenter.png" alt="Epicenter" width="120" height="120">
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://boltai.com?utm_source=handy">
-    <img src="sponsor-images/boltai.jpg" alt="Bolt AI" width="120" height="120">
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://cantydigital.com.au/">
-    <img src="sponsor-images/cantydigital.png" alt="Canty Digital" width="120" height="120">
-  </a>
-</div>
-
-## Integrations
-
-<a href="https://www.raycast.com/mattiacolombomc/handy" title="Install Handy Raycast Extension"><img src="https://www.raycast.com/mattiacolombomc/handy/install_button@2x.png?v=1.1" height="64" style="height: 64px;" alt="Install handy Raycast Extension" /></a>
-
-Control Handy from [Raycast](https://www.raycast.com) — start/stop recording, browse transcript history, manage dictionary, switch models and languages.
-
-[Source](https://github.com/mattiacolombomc/raycast-handy) · by [@mattiacolombomc](https://github.com/mattiacolombomc)
-
-### Debug Mode
-
-Handy includes an advanced debug mode for development and troubleshooting. Access it by pressing:
-
-- **macOS**: `Cmd+Shift+D`
-- **Windows/Linux**: `Ctrl+Shift+D`
-
-### CLI Parameters
-
-Handy supports command-line flags for controlling a running instance and customizing startup behavior. These work on all platforms (macOS, Windows, Linux). Largely this is a beta feature.
-
-**Remote control flags** (sent to an already-running instance via the single-instance plugin; if Handy isn't running, the toggle flags start it and begin recording):
-
-```bash
-handy --toggle-transcription    # Toggle recording on/off
-handy --toggle-post-process     # Toggle recording with post-processing on/off
-handy --cancel                  # Cancel the current operation
-```
-
-**Startup flags:**
-
-```bash
-handy --start-hidden            # Start without showing the main window
-handy --no-tray                 # Start without the system tray icon
-handy --debug                   # Enable debug mode with verbose logging
-handy --help                    # Show all available flags
-```
-
-Flags can be combined for autostart scenarios:
-
-```bash
-handy --start-hidden --no-tray
-```
-
-> **macOS tip:** When Handy is installed as an app bundle, invoke the binary directly:
->
-> ```bash
-> /Applications/Handy.app/Contents/MacOS/Handy --toggle-transcription
-> ```
-
-### Transcription hook
-
-Advanced users on macOS and Linux can rewrite text right before Handy pastes it. Put an executable at `hooks/transcription` in Handy's app data folder (`~/Library/Application Support/com.pais.handy/` on macOS, `~/.local/share/com.pais.handy/` on Linux). Handy writes the text to its stdin, after any LLM post-processing, and pastes its stdout. One trailing newline is removed, and empty output pastes nothing. If the hook fails or runs longer than 30 seconds, the original text is pasted.
-
-The hook doesn't get your shell's `PATH`: on macOS, Handy started from the Dock or Finder only sees `/usr/bin:/bin:/usr/sbin:/sbin`. Use absolute paths for anything else, such as `/opt/homebrew/bin/opencc`.
-
-Example that prefixes `#` when Terminal is the frontmost app (macOS):
-
-```bash
-mkdir -p ~/Library/Application\ Support/com.pais.handy/hooks
-cd ~/Library/Application\ Support/com.pais.handy/hooks
-cat > transcription << 'EOF'
-#!/bin/bash
-app=$(osascript -e 'tell application "System Events" to get name of first application process whose frontmost is true')
-if [ "$app" = "Terminal" ]; then echo "# $(cat)"; else cat; fi
-EOF
-chmod +x transcription
-```
-
-## Known Issues & Current Limitations
-
-This project is actively being developed and has some [known issues](https://github.com/cjpais/Handy/issues). We believe in transparency about the current state:
-
-### Bluetooth Headset Microphones (macOS)
-
-Using a Bluetooth headset microphone on macOS may temporarily reduce playback quality or volume while recording because Bluetooth switches to bidirectional audio. Keep your headphones as the output device and select your Mac's built-in or an external microphone in Handy to avoid this.
-
-### fn and Globe Key Shortcuts (macOS)
-
-Shortcuts that include the `fn` (Globe) key **only work on Apple keyboards** — your Mac's built-in keyboard or an Apple external keyboard. They will never trigger on a third-party keyboard, even while it is connected to the same Mac.
-
-This is a hardware limitation rather than a Handy bug. `fn` is not part of the standard USB HID keyboard specification: Apple reports it through a vendor-specific usage that macOS honors only from Apple devices, while third-party keyboards handle their `Fn` key entirely in firmware and send nothing to the computer. There is no event for Handy to listen for.
-
-If you switch between a MacBook keyboard and an external one, pick a shortcut built from standard modifiers (`ctrl`, `option`, `shift`, `command`) or a regular key instead.
-
-### Administrator Apps (Windows)
-
-Windows doesn't let Handy paste into apps that are running as administrator, so Handy shows an error and the transcript is saved in History. With the Handy Keys keyboard implementation, the shortcut also won't work while an administrator app is focused. This is expected. To use Handy with these apps, run Handy as administrator too.
-
-### Linux Notes
-
-**Paste Method:**
-
-On Linux, new installs paste with **Shift+Insert** (**Clipboard (Shift+Insert)** in **Advanced → Paste Method**). It puts the transcript on both the clipboard and the primary selection, so the same key pastes in GUI apps (which read the clipboard) and in terminals such as kitty, Ghostty, Alacritty and GNOME Terminal (which read the primary selection), then restores both. **Direct** typing is still available, but it depends on your keyboard layout: it can drop capitals and accented characters or type the wrong characters on non-US layouts.
-
-**Text Input Tools:**
-
-Handy needs a tool to send the paste key (or to type, with Direct). Install the appropriate one for your display server:
-
-| Display Server | Recommended Tool | Install Command                                    |
-| -------------- | ---------------- | -------------------------------------------------- |
-| X11            | `xdotool`        | `sudo apt install xdotool`                         |
-| Wayland        | `wtype`          | `sudo apt install wtype`                           |
-| Both           | `dotool`         | `sudo apt install dotool` (requires `input` group) |
-
-- **X11**: Install `xdotool` for both direct typing and clipboard paste shortcuts
-- **Ubuntu 26.04**: Has Wayland display server by default. `wtype` does not work, you need to install `ydotool` and configure systemd as described [here](https://github.com/cjpais/Handy/pull/557#issuecomment-3781249267).
-- **Wayland**: Install `wtype` (preferred) or `dotool` for text input to work correctly
-- **dotool setup**: Requires adding your user to the `input` group: `sudo usermod -aG input $USER` (then log out and back in)
-
-Without these tools, Handy falls back to enigo which may have limited compatibility, especially on Wayland.
-
-**Wayland Support (Linux):**
-
-- Limited support for Wayland display server
-- Requires [`wtype`](https://github.com/atx/wtype) or [`dotool`](https://sr.ht/~geb/dotool/) for text input to work correctly (see [Linux Notes](#linux-notes) below for installation)
-
-**Other Notes:**
-
-- **Runtime library dependency (`libgtk-layer-shell.so.0`)**:
-  - Handy links `gtk-layer-shell` on Linux. If startup fails with `error while loading shared libraries: libgtk-layer-shell.so.0`, install the runtime package for your distro:
-
-    | Distro        | Package to install    | Example command                        |
-    | ------------- | --------------------- | -------------------------------------- |
-    | Ubuntu/Debian | `libgtk-layer-shell0` | `sudo apt install libgtk-layer-shell0` |
-    | Fedora/RHEL   | `gtk-layer-shell`     | `sudo dnf install gtk-layer-shell`     |
-    | Arch Linux    | `gtk-layer-shell`     | `sudo pacman -S gtk-layer-shell`       |
-
-  - For building from source on Ubuntu/Debian, you may also need `libgtk-layer-shell-dev`.
-
-- The recording overlay is disabled by default on Linux (`Overlay Position: None`) because certain compositors treat it as the active window. When the overlay is visible it can steal focus, which prevents Handy from pasting back into the application that triggered transcription. If you enable the overlay anyway, be aware that clipboard-based pasting might fail or end up in the wrong window.
-- Handy picks the WebKit renderer on Linux from the linked WebKitGTK version: 2.54 and newer keep the compositor on shared memory (`WEBKIT_DMABUF_RENDERER_FORCE_SHM=1`), older releases disable DMA-BUF rendering (`WEBKIT_DISABLE_DMABUF_RENDERER=1`). Explicit values for either variable are preserved. For rendering workarounds, see [Troubleshooting → Configure the WebKit renderer](#3-configure-the-webkit-renderer).
-- If Handy fails to start reliably on Linux, see [Troubleshooting → Linux Startup Crashes or Instability](#linux-startup-crashes-or-instability).
-- **Global keyboard shortcuts (Wayland):** On Wayland, system-level shortcuts must be configured through your desktop environment or window manager. Use the [CLI flags](#cli-parameters) as the command for your custom shortcut.
-
-  **GNOME:**
-  1. Open **Settings > Keyboard > Keyboard Shortcuts > Custom Shortcuts**
-  2. Click the **+** button to add a new shortcut
-  3. Set the **Name** to `Toggle Handy Transcription`
-  4. Set the **Command** to `handy --toggle-transcription`
-  5. Click **Set Shortcut** and press your desired key combination (e.g., `Super+O`)
-
-  **KDE Plasma:**
-  1. Open **System Settings > Shortcuts > Custom Shortcuts**
-  2. Click **Edit > New > Global Shortcut > Command/URL**
-  3. Name it `Toggle Handy Transcription`
-  4. In the **Trigger** tab, set your desired key combination
-  5. In the **Action** tab, set the command to `handy --toggle-transcription`
-
-  **Sway / i3:**
-
-  Add to your config file (`~/.config/sway/config` or `~/.config/i3/config`):
-
-  ```ini
-  bindsym $mod+o exec handy --toggle-transcription
-  ```
-
-  **Hyprland:**
-
-  Add to your config file (`~/.config/hypr/hyprland.conf`):
-
-  ```ini
-  bind = $mainMod, O, exec, handy --toggle-transcription
-  ```
-
-- You can also trigger Handy externally via Unix signals or the CLI flags, which lets Wayland window managers or other hotkey daemons keep ownership of keybindings:
-
-  | Action                                    | Trigger                                                  |
-  | ----------------------------------------- | -------------------------------------------------------- |
-  | Toggle transcription                      | `pkill -USR2 -n handy` or `handy --toggle-transcription` |
-  | Toggle transcription with post-processing | `handy --toggle-post-process`                            |
-
-  Example Sway config:
-
-  ```ini
-  bindsym $mod+o exec pkill -USR2 -n handy
-  bindsym $mod+p exec handy --toggle-post-process
-  ```
-
-  `pkill` here simply delivers the signal—it does not terminate the process.
-
-  > **Behavior change:** older releases also accepted `SIGUSR1` for toggling transcription with post-processing. WebKitGTK — the webview engine embedded in Handy on Linux — uses SIGUSR1 internally to coordinate JavaScript garbage collection, so listening for it caused phantom recordings and interrupted dictations every few minutes ([#1660](https://github.com/cjpais/Handy/issues/1660)). Handy no longer listens for SIGUSR1 on Linux; the post-processing toggle is still available via `handy --toggle-post-process`. **Remove any `pkill -USR1` bindings**: the signal is now delivered straight to WebKit's internal handler and can crash the app.
-
-**Overlay & Pasting Issues (Linux):**
-
-- The recording overlay window can interfere with pasting transcribed text into target applications on Linux (X11)
-- **Solution:** Open **Settings > Advanced** and set **"Overlay Position"** to **"None"** to disable the overlay
-- Enable **"Audio Feedback"** (also in Advanced) if you still want audible confirmation of recording state
-- Users who upgrade from older versions or import settings from other platforms may need to manually apply this change
-
-## Verify Release Signatures
-
-Handy release artifacts are signed with Tauri's updater signature format. The public key is stored in [`src-tauri/tauri.conf.json`](src-tauri/tauri.conf.json) under `plugins.updater.pubkey`.
-
-To verify a release manually, set `ARTIFACT` to the filename you downloaded, save the `pubkey` value from `src-tauri/tauri.conf.json` to `handy.pub.b64`, then decode the public key and matching `.sig` file from base64 and verify the artifact with `minisign`:
-
-```bash
-# Replace with the file you downloaded
-ARTIFACT="Handy_0.8.1_amd64.AppImage"
-
-python3 - "$ARTIFACT" <<'PY'
-import base64, pathlib, sys
-
-artifact = sys.argv[1]
-
-pub = pathlib.Path("handy.pub.b64").read_text().strip()
-pathlib.Path("handy.pub").write_bytes(base64.b64decode(pub))
-
-sig = pathlib.Path(f"{artifact}.sig").read_text().strip()
-pathlib.Path(f"{artifact}.minisig").write_bytes(base64.b64decode(sig))
-PY
-
-minisign -Vm "$ARTIFACT" \
-  -p handy.pub \
-  -x "$ARTIFACT.minisig"
-```
-
-On success, `minisign` prints:
+### macOS build fails with `tapi error: malformed file ... unknown architecture`
 
 ```text
-Signature and comment signature verified
+ld: tapi error: malformed file
+/Library/Developer/CommandLineTools/SDKs/MacOSX27.0.sdk/usr/lib/libSystem.B.tbd:4:20: error: unknown architecture
 ```
 
-Do not use `gpg` for these `.sig` files.
+The linker in your Command Line Tools is older than the SDK it is pointed at. This is a toolchain problem on the Mac, not in this project.
 
-## Troubleshooting
-
-### Previous Clipboard Content Is Pasted Instead of the Transcription
-
-If the transcription is correct in **History** but Handy inserts text you copied earlier, see [issue #502](https://github.com/cjpais/Handy/issues/502). With the standard clipboard paste method, Handy restores your previous clipboard after a fixed delay. Under load, the receiving application may read the clipboard only after that restoration.
-
-1. Open Handy's settings window and press `Cmd+Shift+D` (macOS) or `Ctrl+Shift+D` (Windows/Linux) to reveal **Debug**.
-2. On **macOS and Windows**, try **Reliable Paste (Beta)** in Debug with a clipboard paste method selected. It uses clipboard read notifications to delay restoration instead of relying on the standard fixed delay. Test it in the application where the problem occurs; it is still experimental.
-3. If Reliable Paste is disabled or unavailable, increase **Paste Delay (After)** in Debug and test again. This controls the wait before restoring your previous clipboard. **Paste Delay (Before)** controls the wait before sending the paste keystroke and addresses a different part of the operation. These delay settings apply to the standard paste path, not Reliable Paste.
-
-If the problem persists, add your Handy version, operating system, receiving application, paste method, Reliable Paste setting, and before/after delays to the existing issue. Redact private dictated text before sharing logs.
-
-### Manual Model Installation (For Proxy Users or Network Restrictions)
-
-If you're behind a proxy, firewall, or in a restricted network environment where Handy cannot download models automatically, you can manually download and install them. The URLs are publicly accessible from any browser.
-
-#### Step 1: Find Your App Data Directory
-
-1. Open Handy settings
-2. Navigate to the **About** section
-3. Copy the "App Data Directory" path shown there, or use the shortcuts:
-   - **macOS**: `Cmd+Shift+D` to open debug menu
-   - **Windows/Linux**: `Ctrl+Shift+D` to open debug menu
-
-The typical paths are:
-
-- **macOS**: `~/Library/Application Support/com.pais.handy/`
-- **Windows**: `C:\Users\{username}\AppData\Roaming\com.pais.handy\`
-- **Linux**: `~/.config/com.pais.handy/`
-
-#### Step 2: Create Models Directory
-
-Inside your app data directory, create a `models` folder if it doesn't already exist:
+Workaround: build against an older SDK if you have one.
 
 ```bash
-# macOS/Linux
-mkdir -p ~/Library/Application\ Support/com.pais.handy/models
-
-# Windows (PowerShell)
-New-Item -ItemType Directory -Force -Path "$env:APPDATA\com.pais.handy\models"
+ls /Library/Developer/CommandLineTools/SDKs/
+export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk   # use a name from the list
+cargo clean --manifest-path src-tauri/Cargo.toml
+bun run tauri dev
 ```
 
-#### Step 3: Download Model Files
+If only the newest SDK is installed, update or reinstall the Command Line Tools (`softwareupdate --list`, or delete `/Library/Developer/CommandLineTools` and run `xcode-select --install`), or install a matching version from <https://developer.apple.com/download/all/>.
 
-Download the models you want from below
+### App panics on startup with `NotFound` at `src/lib.rs` (tray icon)
 
-**Whisper Models (single .bin files):**
-
-- Small (487 MB): `https://blob.handy.computer/ggml-small.bin`
-- Medium (492 MB): `https://blob.handy.computer/whisper-medium-q4_1.bin`
-- Turbo (1600 MB): `https://blob.handy.computer/ggml-large-v3-turbo.bin`
-- Large (1100 MB): `https://blob.handy.computer/ggml-large-v3-q5_0.bin`
-
-**Parakeet Unified EN 0.6B (single `.gguf` file, recommended):**
-
-- Q8_0 (731 MB): `https://huggingface.co/handy-computer/parakeet-unified-en-0.6b-gguf/resolve/main/parakeet-unified-en-0.6b-Q8_0.gguf`
-
-#### Step 4: Install Models
-
-**For Whisper Models (.bin files):**
-
-Simply place the `.bin` file directly into the `models` directory:
-
-```
-{app_data_dir}/models/
-├── ggml-small.bin
-├── whisper-medium-q4_1.bin
-├── ggml-large-v3-turbo.bin
-└── ggml-large-v3-q5_0.bin
+```text
+thread 'main' panicked at src/lib.rs:262:14:
+called `Result::unwrap()` on an `Err` value: Io(Os { code: 2, kind: NotFound, ... })
 ```
 
-**For GGUF Models (.gguf files):**
+The app could not find its tray icon in `src-tauri/target/debug/resources/`. This has been seen with very recent Rust toolchains that use a new build-directory layout (paths like `target/debug/build/<crate>/<hash>/out`), where the resources end up in `target/debug/build/resources/` instead.
 
-Place the `.gguf` file directly into the `models` directory, exactly like the Whisper `.bin` files above. Handy also picks up models already present in the shared Hugging Face cache (`~/.cache/huggingface/hub`), so a copy downloaded by another tool works without being moved.
-
-**Important Notes:**
-
-- Do not rename the `.bin` or `.gguf` files—use the exact filenames from the download URLs
-- After placing the files, restart Handy to detect the new models
-
-#### Step 5: Verify Installation
-
-1. Restart Handy
-2. Open Settings → Models
-3. Your manually installed models should now appear as "Downloaded"
-4. Select the model you want to use and test transcription
-
-### Custom Whisper Models
-
-Handy can auto-discover custom Whisper GGML models placed in the `models` directory. This is useful for users who want to use fine-tuned or community models not included in the default model list.
-
-**How to use:**
-
-1. Obtain a Whisper model in GGML `.bin` format (e.g., from [Hugging Face](https://huggingface.co/models?search=whisper%20ggml))
-2. Place the `.bin` file in your `models` directory (see paths above)
-3. Restart Handy to discover the new model
-4. The model will appear in the "Custom Models" section of the Models settings page
-
-**Important:**
-
-- Community models are user-provided and may not receive troubleshooting assistance
-- The model must be a valid Whisper GGML format (`.bin` file)
-- Model name is derived from the filename (e.g., `my-custom-model.bin` → "My Custom Model")
-
-### Linux Startup Crashes or Instability
-
-If Handy fails to start reliably on Linux — for example, it crashes shortly after launch, never shows its window, or reports a Wayland protocol error — try the steps below in order.
-
-**1. Install (or reinstall) `gtk-layer-shell`**
-
-Handy uses `gtk-layer-shell` for its recording overlay and links against it at runtime. A missing or broken installation is the most common cause of startup failures and can manifest as a crash or a hang well before any window is shown. Make sure the runtime package is installed for your distro:
-
-| Distro        | Package to install    | Example command                        |
-| ------------- | --------------------- | -------------------------------------- |
-| Ubuntu/Debian | `libgtk-layer-shell0` | `sudo apt install libgtk-layer-shell0` |
-| Fedora/RHEL   | `gtk-layer-shell`     | `sudo dnf install gtk-layer-shell`     |
-| Arch Linux    | `gtk-layer-shell`     | `sudo pacman -S gtk-layer-shell`       |
-
-If it is already installed and you still see startup problems, try reinstalling it (e.g. `sudo pacman -S gtk-layer-shell` again) in case the library files were corrupted by a partial upgrade.
-
-**2. Disable the GTK layer shell overlay (`HANDY_NO_GTK_LAYER_SHELL`)**
-
-If installing the library does not help, you can skip `gtk-layer-shell` initialization entirely as a workaround. On some compositors (notably KDE Plasma under Wayland) it has been reported to interact poorly with the recording overlay. With this variable set, the overlay falls back to a regular always-on-top window:
+Workaround: link the resources to where the app looks for them, then run again.
 
 ```bash
-HANDY_NO_GTK_LAYER_SHELL=1 handy
+rm -rf src-tauri/target/debug/resources
+ln -s "$PWD/src-tauri/resources" src-tauri/target/debug/resources
+bun run tauri dev
 ```
 
-**3. Configure the WebKit renderer (`WEBKIT_DISABLE_DMABUF_RENDERER` / `WEBKIT_DMABUF_RENDERER_FORCE_SHM`)**
+Recreate the link after any `cargo clean`.
 
-Handy picks the renderer at startup from the WebKitGTK build it links, because the DMA-BUF renderer crashes on some GPU/driver combinations but the non-composited fallback loses pixels on the 2.54 series:
+### macOS shows "handy quit unexpectedly"
 
-- **WebKitGTK 2.54 and newer:** the compositor stays enabled and is forced onto shared memory with `WEBKIT_DMABUF_RENDERER_FORCE_SHM=1`. 2.54 composites only the damaged region of every frame, so the previous workaround (`WEBKIT_DISABLE_DMABUF_RENDERER=1`) left transparent windows — such as the recording overlay — showing only their animated parts ([#2166](https://github.com/cjpais/Handy/issues/2166)).
-- **Older releases:** DMA-BUF rendering is disabled with `WEBKIT_DISABLE_DMABUF_RENDERER=1`, which can cause blank windows but matches the previous behavior.
+This is the system crash report, not a permission prompt. The development binary is still named `handy`. Click **OK** and read the terminal output for the actual error.
 
-Explicit environment-variable values are preserved, including in the Nix package:
+### macOS accessibility stays on "Waiting..." after a rebuild
 
-```bash
-# Force the legacy non-composited renderer (2.54: partial frames may reappear)
-WEBKIT_DISABLE_DMABUF_RENDERER=1 handy
+Local builds are ad-hoc signed, so a rebuild can have a new code identity while the old entry in **System Settings → Privacy & Security → Accessibility** still looks enabled. Remove the old entry and grant the permission again. [BUILD.md](BUILD.md#troubleshooting) has the full steps.
 
-# Keep the compositor on shared memory (the 2.54 default below)
-WEBKIT_DMABUF_RENDERER_FORCE_SHM=1 handy
+### The shortcut does nothing
 
-# Let WebKit use DMA-BUF when supported (may reintroduce the GPU/driver crashes)
-WEBKIT_DISABLE_DMABUF_RENDERER=0 handy
-```
+- On macOS, check that both microphone and accessibility permissions are granted.
+- Another app may already use the shortcut. Change it in Settings.
+- On Linux with Wayland, global shortcuts must be bound in your desktop environment. See the Handy notes linked below.
 
-Fully quit Handy, including its tray instance, before testing a value. Running a second instance with `--toggle-transcription` does not change the running process's environment.
+### Other platform issues
 
-**Making a workaround permanent**
+Ratón Pérez inherits Handy's platform behaviour for pasting, Wayland, overlays and Windows administrator apps. For those, see the [Handy README](https://github.com/cjpais/Handy#readme) and [Handy issues](https://github.com/cjpais/Handy/issues). Note that Ratón Pérez keeps its data in its own folder (`~/Library/Application Support/com.ratonperez.app/` on macOS), not Handy's.
 
-Set the variable in the environment of the launcher that actually starts Handy. Shell profile exports may not apply to desktop-menu or autostart launches. If you launch Handy from a `.desktop` file, you can prefix the `Exec=` line, e.g.:
+## Contributing
 
-```ini
-Exec=env HANDY_NO_GTK_LAYER_SHELL=1 handy
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [BUILD.md](BUILD.md). Fixes that are not specific to the writing-tools popup are usually better sent to [Handy](https://github.com/cjpais/Handy) upstream.
 
-Handy's built-in autostart rewrites its generated desktop entry, so editing that entry is not a durable workaround. For autostart, use an appropriate session/service environment, or disable Handy's built-in autostart and manage your own startup entry with the required variable.
+## License and credits
 
-If a workaround helps you, please [open an issue](https://github.com/cjpais/Handy/issues) describing your distro, desktop environment, and session type — that information helps us narrow down the underlying bug.
+MIT License. See [LICENSE](LICENSE).
 
-### Empty recording overlay on Hyprland / Omarchy
-
-If the recording overlay is empty or bordered, fully quit Handy and launch a
-[native installation](BUILD.md#linux-install-from-source) with Wayland enabled:
-
-```bash
-env -u HANDY_NO_GTK_LAYER_SHELL GDK_BACKEND=wayland handy
-```
-
-If this works, apply `GDK_BACKEND=wayland` only to Handy's launcher.
-
-The AppImage forces `GDK_BACKEND=x11` in its launch script, after your environment, so
-`GDK_BACKEND=wayland ./Handy.AppImage` has no effect. Use `HANDY_GDK_BACKEND` instead; Handy copies it
-into `GDK_BACKEND` before GTK starts:
-
-```bash
-HANDY_GDK_BACKEND=wayland ./Handy_x.y.z_amd64.AppImage
-```
-
-For a launcher, put the variable in the `.desktop` entry, for example
-`Exec=env HANDY_GDK_BACKEND=wayland /path/to/Handy_x.y.z_amd64.AppImage`.
-
-Try native Wayland if the AppImage shows a frozen Language dropdown, a black window after closing
-to the tray and relaunching ([#1729](https://github.com/cjpais/Handy/issues/1729)), or exits with
-`Failed to initialize gtk backend` on a Wayland-only compositor such as Niri without XWayland
-([#2034](https://github.com/cjpais/Handy/issues/2034)). The AppImage defaults to X11 because of
-[tauri#8541](https://github.com/tauri-apps/tauri/issues/8541), so this stays opt-in.
-
-### Vulkan Overlays and Capture Tools on Windows (`HANDY_KEEP_VULKAN_IMPLICIT_LAYERS`)
-
-On Windows, Handy asks the Vulkan loader to skip implicit layers to avoid crashes caused by overlay and capture hooks ([#2049](https://github.com/cjpais/Handy/issues/2049)). GPU acceleration remains enabled; this does not change system-wide settings.
-
-To opt out for GPU selection or debugging tools, fully quit Handy (including the tray icon), then run both commands in the same PowerShell window:
-
-```powershell
-$env:HANDY_KEEP_VULKAN_IMPLICIT_LAYERS = "1"
-& "$env:ProgramFiles\Handy\handy.exe"
-```
-
-Adjust the executable path if needed. This override only applies to apps launched from that PowerShell session, not the Start menu. Handy also preserves any existing `VK_LOADER_LAYERS_DISABLE` value.
-
-### How to Contribute
-
-1. **Check existing issues** at [github.com/cjpais/Handy/issues](https://github.com/cjpais/Handy/issues)
-2. **Fork the repository** and create a feature branch
-3. **Test thoroughly** on your target platform
-4. **Submit a pull request** with clear description of changes
-5. **Join the discussion** - reach out at [contact@handy.computer](mailto:contact@handy.computer)
-
-The goal is to create both a useful tool and a foundation for others to build upon—a well-patterned, simple codebase that serves the community.
-
-## Related Projects
-
-- **[Handy CLI](https://github.com/cjpais/handy-cli)** - The original Python command-line version
-- **[handy.computer](https://handy.computer)** - Project website with demos and documentation
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-Handy is open-source software, but the Handy name, logo, icon, and brand assets are not open-source. Unofficial forks, rewrites, and redistributions must use their own branding and must not imply endorsement or affiliation.
-
-## Acknowledgments
-
-- **Whisper** by OpenAI for the speech recognition model
-- **ggml** for an amazing cross-platform tensor library
-- **Silero** for great lightweight VAD
-- **Tauri** team for the excellent Rust-based app framework
-- **Community contributors** helping make Handy better
+- [Handy](https://github.com/cjpais/Handy) by CJ Pais, which this project is forked from. The Handy name, logo and brand assets are not part of the open-source license; Ratón Pérez is an unofficial fork and is not affiliated with or endorsed by Handy.
+- [WritingTools](https://github.com/theJayTea/WritingTools) for the popup idea.
+- Whisper by OpenAI, ggml, Silero VAD and Tauri.
