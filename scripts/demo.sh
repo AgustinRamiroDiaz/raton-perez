@@ -51,7 +51,7 @@ fi
 declare -A LINES=(
   [dictation]="So um, I think we should basically move the launch to next Tuesday, because like the payment tests are still failing, and uh we don't want to ship that broken."
   [email]="hey can you send me the numbers from last week, i need them for the board deck by tomorrow morning, thanks."
-  [meeting]="Notes from the standup. Ana finished the login page and starts on billing today. Rahul is blocked on the staging database and needs access from DevOps. Tanisha fixed the popup paste bug and will review the demo script. The release is still planned for Friday."
+  [meeting]="Notes from the standup. Maria finished the login page and starts on billing today. Diego is blocked on the staging database and needs access from DevOps. Sofia fixed the popup paste bug and will review the demo script. The release is still planned for Friday."
 )
 
 piper() { uvx -q -p 3.12 --from piper-tts "$@"; }
