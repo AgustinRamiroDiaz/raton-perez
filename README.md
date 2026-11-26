@@ -85,6 +85,26 @@ The first run compiles the Rust side and takes a few minutes. To produce an inst
 
 All shortcuts can be changed in Settings.
 
+The same actions can be triggered from a terminal while the app runs, which is handy for scripts and global shortcuts the app can't register (for example on Wayland). With a development build, the binary is `src-tauri/target/debug/handy`:
+
+```sh
+handy --toggle-popup          # start, then stop, a recording for the writing-tools popup
+handy --toggle-post-process   # same, with automatic cleanup and paste
+handy --toggle-transcription  # same, plain transcription
+handy --cancel
+```
+
+### Scripted demo (Linux, X11)
+
+`scripts/demo.sh` plays a synthetic voice into a virtual microphone and drives the app and the popup with the flags above and the popup's keyboard shortcuts: a dictation cleaned up by the LLM, popup actions with a custom instruction, and notes turned into key points and a table, each pasted into a text editor. It needs `xdotool`, `pactl`/`paplay` and [`uv`](https://docs.astral.sh/uv/) (for Piper TTS), and post-processing set up in the app. Quit the app first, then:
+
+```sh
+bun run tauri build --debug --no-bundle   # a dev build with the frontend embedded
+scripts/demo.sh --record demo.mp4         # --record also needs ffmpeg and parecord
+```
+
+The script takes over the keyboard and mouse for about two minutes. See the top of the script for the timing variables.
+
 ### Changing the model or provider
 
 Open **Settings → Post-Processing**. With the "Ollama (local)" provider, the page lists the models you have installed in Ollama. Cloud providers need an API key. The preset prompts can be edited on the same page.
