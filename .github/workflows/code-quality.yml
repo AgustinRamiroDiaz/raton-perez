@@ -46,20 +46,7 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Check translation consistency
-        run: bun run check:translations
-
-      - name: Check model language coverage
-        run: bun run check:model-languages
-
-      - name: Check bundled model catalog matches @handy-computer/models
-        run: bun run check:catalog
-
-      - name: Test keyboard utilities
-        run: bun run test:keyboard
-
-      - name: Run ESLint
-        run: bun run lint
-
-      - name: Run prettier
-        run: bun run format:check
+      # scripts/validate.sh is the single list of checks, so a local run and
+      # CI can't drift apart.
+      - name: Validate (translations, catalog, lint, type-check, formatting)
+        run: scripts/validate.sh
