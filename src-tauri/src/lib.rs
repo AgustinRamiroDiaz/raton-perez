@@ -922,6 +922,8 @@ pub fn run(cli_args: CliArgs) {
                 signal_handle::send_transcription_input(app, "transcribe", "CLI");
             } else if args.iter().any(|a| a == "--toggle-post-process") {
                 signal_handle::send_transcription_input(app, "transcribe_with_post_process", "CLI");
+            } else if args.iter().any(|a| a == "--toggle-popup") {
+                signal_handle::send_transcription_input(app, "transcribe_with_popup", "CLI");
             } else if args.iter().any(|a| a == "--cancel") {
                 crate::utils::cancel_current_operation(app);
             } else {
@@ -1168,6 +1170,8 @@ pub fn run(cli_args: CliArgs) {
                     "transcribe_with_post_process",
                     "CLI",
                 );
+            } else if cli_args.toggle_popup {
+                signal_handle::send_transcription_input(&app_handle, "transcribe_with_popup", "CLI");
             }
 
             Ok(())

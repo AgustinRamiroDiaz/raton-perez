@@ -22,6 +22,11 @@ pub struct CliArgs {
     #[arg(long)]
     pub toggle_post_process: bool,
 
+    /// Toggle transcription into the writing-tools popup (sent to the running
+    /// instance, or starts recording once Ratón Pérez has launched)
+    #[arg(long)]
+    pub toggle_popup: bool,
+
     /// Cancel the current operation (sent to the running instance; does
     /// nothing if Handy isn't running yet)
     #[arg(long)]
