@@ -1,5 +1,9 @@
 # 🐭 Ratón Pérez
 
+<p align="center">
+  <img src="docs/raton-perez.png" alt="Crayon drawing of a mouse carrying a tooth in its backpack, running across a laptop keyboard while a child's words swirl into its ears" width="600">
+</p>
+
 Speak, then polish. Ratón Pérez is a desktop dictation app: press a shortcut, speak, and your words are transcribed locally. Before pasting, a writing-tools popup lets you proofread, rewrite, change the tone, summarize, extract key points or build a table with an LLM.
 
 It is a fork of [Handy](https://github.com/cjpais/Handy) (local speech-to-text) with a popup inspired by [WritingTools](https://github.com/theJayTea/WritingTools).
